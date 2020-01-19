@@ -65,45 +65,116 @@ namespace ConsoleApp1
             System.Diagnostics.Debug.WriteLine(fileName);
             //Setting of dataFile path - end
 
+            bool stopTheApp = false;
+            bool editOptionRunning = false;
+            String option = Console.ReadLine();
+
             //Main functionality - start
-            switch (Console.ReadLine())
+            while (!stopTheApp)
             {
-                case "read":
-                    ArrayList textBuffer = new ArrayList();
-                    using (StreamReader sr = new StreamReader(fileName))
-                    {
-                        String lineBuffer;
-                        do
+                switch (option)
+                {
+                    case "read":
+                        ArrayList textBuffer = new ArrayList();
+                        using (StreamReader sr = new StreamReader(fileName))
                         {
-                            lineBuffer = sr.ReadLine();
-                            if (lineBuffer != null)
+                            String lineBuffer;
+                            do
                             {
-                                textBuffer.Add(new WorkingLine(lineBuffer));
-                                (textBuffer[textBuffer.Count-1] as WorkingLine).setLineNumber(textBuffer.Count);
+                                lineBuffer = sr.ReadLine();
+                                if (lineBuffer != null)
+                                {
+                                    textBuffer.Add(new WorkingLine(lineBuffer));
+                                    (textBuffer[textBuffer.Count-1] as WorkingLine).setLineNumber(textBuffer.Count);
+                                }
+                            } while (lineBuffer != null);
+                        }
+                        foreach(WorkingLine line in textBuffer)
+                        {
+                            LineToWrite lineToWrite = new LineToWrite(line.getLineNumber(), line.getLineText());
+                            Console.WriteLine(lineToWrite.write());
+                        }
+
+                        bool tortureUserAfterReadFile = true;
+                        while (tortureUserAfterReadFile) { 
+                            Console.WriteLine("Do you want to edit above text? [yes/no]");
+                            switch (Console.ReadLine())
+                            {
+                                case "yes":
+                                    Console.WriteLine("Ok. What to you want to do?" +
+                                        "\n - Insert line [insert]" +
+                                        "\n - Rewrite line [rewrite]" +
+                                        "\n - Delete line [delete]");
+                                    option = Console.ReadLine();
+                                    tortureUserAfterReadFile = true;
+                                    while (tortureUserAfterReadFile)
+                                    {
+                                        switch (option)
+                                        {
+                                            case "insert":
+                                            case "rewrite":
+                                            case "delete":
+                                                tortureUserAfterReadFile = false;
+                                                break;
+                                            default:
+                                                Console.WriteLine("Invalid option");
+                                                tortureUserAfterReadFile = true;
+                                                break;
+                                        }
+                                    }
+                                    editOptionRunning = true;
+                                    tortureUserAfterReadFile = false;
+                                    break;
+                                case "no":
+                                    tortureUserAfterReadFile = false;
+                                    break;
+                                default:
+                                    Console.WriteLine("Invalid selection");
+                                    tortureUserAfterReadFile = true;
+                                    break;
                             }
-                        } while (lineBuffer != null);
-                    }
-                    foreach(WorkingLine line in textBuffer)
-                    {
-                        LineToWrite lineToWrite = new LineToWrite(line.getLineNumber(), line.getLineText());
-                        Console.WriteLine(lineToWrite.write());
-                    }
-                    Console.WriteLine("Working in progress... this function coming soon.");
-                    break;
+                        }
+                        break;
 
-                case "write":
-                    Console.WriteLine("What do you want to write to file?");
-                    var inputBuffer = Console.ReadLine();
-                    using (System.IO.StreamWriter file =
-                        new System.IO.StreamWriter(fileName, true))
-                    {
-                        file.WriteLine(inputBuffer);
-                    }
-                    break;
+                    case "write":
+                        Console.WriteLine("What do you want to write to file?");
+                        var inputBuffer = Console.ReadLine();
+                        using (System.IO.StreamWriter file =
+                            new System.IO.StreamWriter(fileName, true))
+                        {
+                            file.WriteLine(inputBuffer);
+                        }
+                        break;
 
-                default:
-                    Console.WriteLine("Invalid option, application will be closed...");
-                    break;
+                    case "insert":
+                        Console.WriteLine("Function will be implemented soon...");
+                        editOptionRunning = false;
+                        break;
+
+                    case "rewrite":
+                        Console.WriteLine("Function will be implemented soon...");
+                        editOptionRunning = false;
+                        break;
+
+                    case "delete":
+                        Console.WriteLine("Function will be implemented soon...");
+                        editOptionRunning = false;
+                        break;
+
+                    case "end":
+                        stopTheApp = true;
+                        break;
+
+                    default:
+                        Console.WriteLine("Invalid option");
+                        break;
+                }
+
+                if (stopTheApp == false && editOptionRunning == false)
+                {
+                    Console.WriteLine("\nWhat do you want to do now? [read/write/end]");
+                    option = Console.ReadLine();
+                }
             }
             //Main functionality - end
 
