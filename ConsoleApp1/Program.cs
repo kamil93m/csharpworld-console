@@ -110,10 +110,10 @@ namespace ConsoleApp1
                                         "\n - Insert line [insert]" +
                                         "\n - Rewrite line [rewrite]" +
                                         "\n - Delete line [delete]");
-                                    option = Console.ReadLine();
                                     tortureUserAfterReadFile = true;
                                     while (tortureUserAfterReadFile)
                                     {
+                                        option = Console.ReadLine();
                                         switch (option)
                                         {
                                             case "insert":
@@ -152,25 +152,45 @@ namespace ConsoleApp1
                         break;
 
                     case "insert":
-                        Console.WriteLine("Function will be implemented soon...");
+                        Console.WriteLine("What number will have a inserted record? Ask is about the position of the new record in the file.");
+                        int numberLineI = 0;
+                        bool enteredNumberIsNumericI = false;
+                        while (!enteredNumberIsNumericI)
+                        {
+                            var endteredNumberLine = Console.ReadLine();
+                            enteredNumberIsNumericI = int.TryParse(endteredNumberLine, out numberLineI);
+                            if (!enteredNumberIsNumericI) Console.WriteLine("Please give a number...");
+                        }
+                        Console.WriteLine("Ok. What contain do you want insert on position " + numberLineI + "?");
+                        String newText = new String(Console.ReadLine());
+                        textBuffer.Insert(numberLineI - 1, new WorkingLine(newText));
+                        editOptionRunning = false;
+                        using (System.IO.StreamWriter file =
+                            new System.IO.StreamWriter(fileName))
+                        {
+                            foreach (WorkingLine line in textBuffer)
+                            {
+                                file.WriteLine(line.getLineText());
+                            }
+                        }
                         editOptionRunning = false;
                         break;
 
                     case "rewrite":
                         Console.WriteLine("Which line you want to rewrite? Please give a number line.");
-                        int numberLine = 0;
-                        bool enteredNumberIsNumeric = false;
-                        while (!enteredNumberIsNumeric)
+                        int numberLineR = 0;
+                        bool enteredNumberIsNumericR = false;
+                        while (!enteredNumberIsNumericR)
                         {
                         var endteredNumberLine = Console.ReadLine();
-                        enteredNumberIsNumeric = int.TryParse(endteredNumberLine, out numberLine);
-                        if (!enteredNumberIsNumeric) Console.WriteLine("Please give a number...");
+                            enteredNumberIsNumericR = int.TryParse(endteredNumberLine, out numberLineR);
+                        if (!enteredNumberIsNumericR) Console.WriteLine("Please give a number...");
                         }
-                        Console.WriteLine("Selected line with number: " + numberLine + " has got following text:\n" +
-                             (textBuffer[numberLine - 1] as WorkingLine).getLineText());
+                        Console.WriteLine("Selected line with number: " + numberLineR + " has got following text:\n" +
+                             (textBuffer[numberLineR - 1] as WorkingLine).getLineText());
                         Console.WriteLine("What would you like to replace it with? Please give a text...");
-                        (textBuffer[numberLine - 1] as WorkingLine).setLineText(Console.ReadLine());
-                        Console.WriteLine("New contain of line " + numberLine + " has been saved.");
+                        (textBuffer[numberLineR - 1] as WorkingLine).setLineText(Console.ReadLine());
+                        Console.WriteLine("New contain of line " + numberLineR + " has been saved.");
 
                         using (System.IO.StreamWriter file =
                           new System.IO.StreamWriter(fileName))
@@ -184,7 +204,50 @@ namespace ConsoleApp1
                         break;
 
                     case "delete":
-                        Console.WriteLine("Function will be implemented soon...");
+                        Console.WriteLine("Ok. You want do delete all of records in file or one selected record? [one/all]");
+                        tortureUserAfterReadFile = true;
+                        while (tortureUserAfterReadFile)
+                        {
+                            switch (Console.ReadLine())
+                            {
+                                case "one":
+                                    Console.WriteLine("Enter record number to delete?");
+                                    int numberLineD = 0;
+                                    bool enteredNumberIsNumericD = false;
+                                    while (!enteredNumberIsNumericD)
+                                    {
+                                        var endteredNumberLineD = Console.ReadLine();
+                                        enteredNumberIsNumericD = int.TryParse(endteredNumberLineD, out numberLineD);
+                                        if (!enteredNumberIsNumericD) Console.WriteLine("Please give a number...");
+                                    }
+                                    textBuffer.RemoveAt(numberLineD - 1);
+                                    using (System.IO.StreamWriter file =
+                                        new System.IO.StreamWriter(fileName))
+                                    {
+                                        foreach (WorkingLine line in textBuffer)
+                                        {
+                                            file.WriteLine(line.getLineText());
+                                        }
+                                    }
+                                    tortureUserAfterReadFile = false;
+                                    break;
+
+                                case "all":
+                                    using (System.IO.StreamWriter file =
+                                        new System.IO.StreamWriter(fileName))
+                                    {
+                                        String emptyString = null;
+                                        file.WriteLine(emptyString);
+                                    }
+
+                                    tortureUserAfterReadFile = false;
+                                    break;
+                                default:
+                                    Console.WriteLine("Invalid option");
+                                    tortureUserAfterReadFile = true;
+                                    break;
+                            }
+                        }
                         editOptionRunning = false;
                         break;
 
