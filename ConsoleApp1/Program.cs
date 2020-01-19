@@ -28,6 +28,10 @@ namespace ConsoleApp1
         {
             return this.lineText;
         }
+        public void setLineText(String text)
+        {
+            this.lineText = text;
+        }
     }
 
     class LineToWrite
@@ -68,6 +72,7 @@ namespace ConsoleApp1
             bool stopTheApp = false;
             bool editOptionRunning = false;
             String option = Console.ReadLine();
+            ArrayList textBuffer = new ArrayList();
 
             //Main functionality - start
             while (!stopTheApp)
@@ -75,7 +80,7 @@ namespace ConsoleApp1
                 switch (option)
                 {
                     case "read":
-                        ArrayList textBuffer = new ArrayList();
+                        textBuffer = new ArrayList();
                         using (StreamReader sr = new StreamReader(fileName))
                         {
                             String lineBuffer;
@@ -152,7 +157,29 @@ namespace ConsoleApp1
                         break;
 
                     case "rewrite":
-                        Console.WriteLine("Function will be implemented soon...");
+                        Console.WriteLine("Which line you want to rewrite? Please give a number line.");
+                        int numberLine = 0;
+                        bool enteredNumberIsNumeric = false;
+                        while (!enteredNumberIsNumeric)
+                        {
+                        var endteredNumberLine = Console.ReadLine();
+                        enteredNumberIsNumeric = int.TryParse(endteredNumberLine, out numberLine);
+                        if (!enteredNumberIsNumeric) Console.WriteLine("Please give a number...");
+                        }
+                        Console.WriteLine("Selected line with number: " + numberLine + " has got following text:\n" +
+                             (textBuffer[numberLine - 1] as WorkingLine).getLineText());
+                        Console.WriteLine("What would you like to replace it with? Please give a text...");
+                        (textBuffer[numberLine - 1] as WorkingLine).setLineText(Console.ReadLine());
+                        Console.WriteLine("New contain of line " + numberLine + " has been saved.");
+
+                        using (System.IO.StreamWriter file =
+                          new System.IO.StreamWriter(fileName))
+                        {
+                            foreach (WorkingLine line in textBuffer)
+                            {
+                                file.WriteLine(line.getLineText());
+                            }
+                        }
                         editOptionRunning = false;
                         break;
 
